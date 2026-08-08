@@ -7,7 +7,7 @@ use std::sync::LazyLock;
 use time::{format_description::StaticFormatDescription, macros::format_description};
 
 pub const GRAPH_LAYOUT: [&str; 3] = ["journals", "logseq", "pages"];
-pub static DEFAULT_EXCLUDE: [&str; 2] = ["logseq", "contents.md"];
+pub static EXCLUDE: [&str; 2] = ["logseq", "contents.md"];
 
 pub static COMRAK_OPTIONS: LazyLock<Options<'static>> = LazyLock::new(|| Options {
     extension: Extension {

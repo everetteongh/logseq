@@ -59,7 +59,7 @@ pub enum GraphError {
 }
 
 #[derive(Error, Debug)]
-pub enum TaskMarkerError {
+pub enum TaskStatusError {
     #[error("Invalid task marker str!")]
     InvalidMarker,
 }
@@ -71,7 +71,7 @@ pub enum TaskError {
     #[error("The given list item was empty!")]
     EmptyItem,
     #[error("Got an error when processing the task marker: {0}")]
-    TaskMarker(#[from] TaskMarkerError),
+    TaskStatus(#[from] TaskStatusError),
 }
 
 #[derive(Error, Debug)]

@@ -4,6 +4,7 @@
 /// In [Logseq](https://logseq.com) (and other outliners), each bullet is a "block." For our purposes, a block ([`block::Block`]) is either [`block::Text`] or [`block::Task`]
 pub mod block;
 pub(crate) mod consts;
+pub mod document;
 /// Error types
 pub mod error;
 /// Graph-related code, and the main entrypoint of this library
@@ -19,6 +20,7 @@ pub mod ext {
 /// Convenience module for glob imports (`use alleged_lib::prelude::*`)
 pub mod prelude {
     pub use crate::block::*;
+    pub use crate::document::*;
     pub use crate::error::*;
     pub use crate::ext::comrak::Arena;
     pub use crate::graph::*;
