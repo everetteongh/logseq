@@ -34,7 +34,7 @@ fn determine_depth(mut node: &AstNode) -> usize {
 #[derive(Default, Debug, Clone)]
 pub struct Document {
     pub properties: Option<DocumentProperties>,
-    pub blocks: IndexMap<Uuid, Block>,
+    blocks: IndexMap<Uuid, Block>,
 }
 
 impl Document {
@@ -51,14 +51,17 @@ impl Document {
         self.blocks.values_mut()
     }
     #[must_use]
-    pub fn get_block(&self, id: Uuid) -> Option<&Block> {
+    pub fn get(&self, id: Uuid) -> Option<&Block> {
         self.blocks.get(&id)
     }
     #[must_use]
-    pub fn get_block_mut(&mut self, id: Uuid) -> Option<&mut Block> {
+    pub fn get_mut(&mut self, id: Uuid) -> Option<&mut Block> {
         self.blocks.get_mut(&id)
     }
-    pub fn push(&mut self, block: Block) -> Option<Block> {
+    pub fn prepend(&mut self, block: Block) -> Option<Block> {
+        self.blocks.shift_insert(0, block.properties.id, block)
+    }
+    pub fn append(&mut self, block: Block) -> Option<Block> {
         self.blocks.insert(block.properties.id, block)
     }
 }

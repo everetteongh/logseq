@@ -18,14 +18,14 @@ fn task_handling() {
         ..Default::default()
     };
 
-    today.document.blocks.insert(block.properties.id, block);
+    today.append(block);
 
     today.save().unwrap();
 
     let mut today_content = fs::read_to_string(&today.path).unwrap();
     assert!(today_content.contains("TODO"));
 
-    for ref mut block in today.document.blocks_mut() {
+    for ref mut block in today.blocks_mut() {
         if let Some(ref mut task) = block.task_mut() {
             task.status(&TaskStatus::Done);
         }

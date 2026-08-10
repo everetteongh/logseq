@@ -5,10 +5,9 @@ pub use builder::*;
 pub use entry::*;
 use time::{Date, OffsetDateTime};
 
+use crate::error::Alleged;
 use std::{ffi::OsStr, path::PathBuf};
 use walkdir::{DirEntry, WalkDir};
-
-use crate::error::Alleged;
 
 pub struct Graph {
     exclude: &'static [&'static str],
@@ -71,5 +70,8 @@ impl Graph {
         }
 
         self.entry(&EntryKind::Page(Namespace::from(key.to_string())))
+    }
+    pub fn save_to_disk(&self, entry: GraphEntry) -> Result<(), Alleged> {
+        entry.save_to_disk()
     }
 }

@@ -5,7 +5,12 @@ pub use kind::*;
 pub use namespace::*;
 
 use crate::{document::Document, error::Alleged};
-use std::{fs, path::PathBuf, str::FromStr};
+use std::{
+    fs,
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+    str::FromStr,
+};
 
 #[derive(Debug)]
 pub struct GraphEntry {
@@ -29,9 +34,23 @@ impl GraphEntry {
             document,
         })
     }
-    pub fn save(&self) -> Result<(), Alleged> {
+    pub fn save_to_disk(&self) -> Result<(), Alleged> {
         fs::write(&self.path, self.document.to_string().as_bytes())?;
 
         Ok(())
+    }
+}
+
+impl Deref for GraphEntry {
+    type Target = Document;
+
+    fn deref(&self) -> &Self::Target {
+        &self.document
+    }
+}
+
+impl DerefMut for GraphEntry {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.document
     }
 }

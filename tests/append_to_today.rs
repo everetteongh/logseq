@@ -15,7 +15,7 @@ fn append_to_today() {
         ..Default::default()
     };
 
-    today.document.blocks.insert(block.properties.id, block);
+    today.append(block);
 
     today.save().unwrap();
 
