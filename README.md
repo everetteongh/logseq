@@ -2,6 +2,10 @@
 
 Simple library to read/write to Logseq note graphs in Rust, built with [comrak](https://lib.rs/crates/comrak).
 
+## Usage
+
+See [tests](./tests/).
+
 ## Logseq Support
 
 Currently, the latest version of [Logseq OG](https://github.com/Logseq/OG) (read: file-based) is supported, with some caveats:
