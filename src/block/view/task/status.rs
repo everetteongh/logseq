@@ -3,13 +3,19 @@ use crate::error::TaskStatusError;
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 
+/// The status of a task. We only support the TODO/DOING Logseq workflow at the moment.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum TaskStatus {
+    /// Represents `TODO`
     ToDo,
+    /// Represents `DOING`
     Doing,
+    /// Represents `DONE`
     Done,
+    /// Represents `CANCELLED`
     Cancelled,
+    /// Represents `WAITING`
     Waiting,
 }
 

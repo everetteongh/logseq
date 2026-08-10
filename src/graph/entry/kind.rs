@@ -1,22 +1,28 @@
 use crate::{
     consts::JOURNAL_FORMAT,
-    error::{Alleged, EntryError},
+    error::{EntryError, Logseq},
     graph::Namespace,
 };
 use std::path::Path;
 use time::Date;
 
+/// A type of entry in a Logseq graph, either journal or page.
 #[derive(Debug)]
 pub enum EntryKind {
+    /// A journal entry for a specific date.
     Journal(Date),
+    /// A page with a specific [`Namespace`].
     Page(Namespace),
 }
 
 impl EntryKind {
+    /// Converts this entry kind to a graph-root-relative path.
+    ///
+    /// # Panics
+    /// This function calls [`Date::format`] with a format validated at compile-time, so **it will never panic..**
     #[must_use]
     pub fn as_relative_path(&self) -> String {
         match self {
-            // NOTE: `JOURNAL_FORMAT` is guaranteed valid @ compile time, so **this will never panic**.
             #[allow(clippy::unwrap_used)]
             Self::Journal(date) => format!("journals/{}.md", date.format(JOURNAL_FORMAT).unwrap()),
             Self::Page(namespace) => format!("pages/{namespace}.md"),
@@ -25,7 +31,7 @@ impl EntryKind {
 }
 
 impl TryFrom<&Path> for EntryKind {
-    type Error = Alleged;
+    type Error = Logseq;
 
     fn try_from(path: &Path) -> Result<Self, Self::Error> {
         let stem = path

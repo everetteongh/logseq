@@ -1,10 +1,11 @@
+/// Document-level properties.
 mod properties;
 pub use properties::*;
 
 use crate::{
     block::{Block, BlockProperties},
     consts::COMRAK_OPTIONS,
-    error::Alleged,
+    error::Logseq,
     properties::Properties,
 };
 use comrak::{
@@ -19,6 +20,7 @@ use indexmap::{
 use std::{fmt::Display, str::FromStr};
 use uuid::Uuid;
 
+/// Calculate the depth of a given [`AstNode`].
 fn determine_depth(mut node: &AstNode) -> usize {
     let mut depth: usize = 0;
     while let Some(parent) = node.parent() {
@@ -27,40 +29,51 @@ fn determine_depth(mut node: &AstNode) -> usize {
         }
         node = parent;
     }
-    // Subtract 1 b/c `List` wraps all items
+
+    // All nodes we work with are wrapped by a [`List`], so subtract one for the "true" depth (i.e. 0 = top-level).
     depth.saturating_sub(1)
 }
 
+/// A Logseq document, which may or may not have [`DocumentProperties`].
 #[derive(Default, Debug, Clone)]
 pub struct Document {
+    /// The document's [`DocumentProperties`].
     pub properties: Option<DocumentProperties>,
+    /// The document's blocks.
     blocks: IndexMap<Uuid, Block>,
 }
 
 impl Document {
+    /// Create a fresh document instance with defaults.
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
+    /// Return an immutable iterator over the document's blocks. Ordered.
     #[must_use]
     pub fn blocks(&self) -> Values<'_, Uuid, Block> {
         self.blocks.values()
     }
+    /// Return a mutable iterator over the document's blocks. Ordered.
     #[must_use]
     pub fn blocks_mut(&mut self) -> ValuesMut<'_, Uuid, Block> {
         self.blocks.values_mut()
     }
+    /// Immutable reference to a block by ID.
     #[must_use]
     pub fn get(&self, id: Uuid) -> Option<&Block> {
         self.blocks.get(&id)
     }
+    /// Mutable reference to a block by ID.
     #[must_use]
     pub fn get_mut(&mut self, id: Uuid) -> Option<&mut Block> {
         self.blocks.get_mut(&id)
     }
+    /// Prepend a block to the document.
     pub fn prepend(&mut self, block: Block) -> Option<Block> {
         self.blocks.shift_insert(0, block.properties.id, block)
     }
+    /// Append a block to the document.
     pub fn append(&mut self, block: Block) -> Option<Block> {
         self.blocks.insert(block.properties.id, block)
     }
@@ -81,7 +94,7 @@ impl Display for Document {
 }
 
 impl FromStr for Document {
-    type Err = Alleged;
+    type Err = Logseq;
 
     fn from_str(input: &str) -> Result<Self, Self::Err> {
         let mut markdown = input.to_string();

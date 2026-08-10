@@ -1,6 +1,7 @@
 use crate::{block::BlockProperties, consts::PROPERTY_REGEX, document::DocumentProperties};
 use rustc_hash::FxHashMap;
 
+/// Extract the properties from an input [`String`], removing them and returning an [`FxHashMap<String, String>`]. Returns when it reaches a non-property line if `stop_at_content` is `true`.
 fn take_properties(input: &mut String, stop_at_content: bool) -> FxHashMap<String, String> {
     let mut properties = FxHashMap::default();
     let mut lines: Vec<&str> = input.lines().collect();
@@ -32,8 +33,14 @@ fn take_properties(input: &mut String, stop_at_content: bool) -> FxHashMap<Strin
     properties
 }
 
+/// A common trait for property access. You probably want an implementor, like [`BlockProperties`] or [`DocumentProperties`].
 pub trait Properties: TryFrom<FxHashMap<String, String>> {
+    /// Extract the properties from an input, removing them from said input. This returns an empty object if there were no properties.
+    ///
+    /// # Errors
+    /// This function only fails if an `id` property is present that can't be parsed to [`uuid::Uuid`].
     fn take_properties(input: &mut String) -> Result<Self, Self::Error>;
+    /// Extract the properties from an input, removing them from said input. If there were no properties, this returns [`None`].
     fn maybe_take_properties(input: &mut String) -> Option<Result<Self, Self::Error>>;
 }
 
@@ -51,6 +58,7 @@ impl Properties for BlockProperties {
         }
     }
 }
+
 impl Properties for DocumentProperties {
     fn take_properties(input: &mut String) -> Result<Self, Self::Error> {
         let properties = take_properties(input, true);

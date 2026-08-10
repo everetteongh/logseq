@@ -1,17 +1,34 @@
 use rustc_hash::FxHashMap;
 use std::{convert::Infallible, fmt};
 
+/// Document properties. See [the official Logseq documentation](https://github.com/logseq/docs/blob/08f855f24d66e4509b7ea808554c13b4649e6ee1/pages/Built-in%20Properties.md).
 #[derive(Default, Debug, Clone)]
 pub struct DocumentProperties {
+    /// The icon identifier for a page.
     pub icon: Option<String>,
+    /// Custom page title; overrides filename.
     pub title: Option<String>,
-    pub tags: Vec<String>,
+    /// From the official docs:
+    /// > get listed in their own section "Pages tagged with X" below a page.
+    ///
+    /// We just return the property value -- you'll have to parse it yourself.
+    pub tags: Option<String>,
+    /// Designates a page/block as a template.
     pub template: Option<String>,
+    /// Specifies whether the parent level content of a block should be included when using a template.
     pub template_including_parent: Option<bool>,
+    /// Page synonyms. [`crate::graph::Graph::page`] checks these before returning the [`crate::graph::GraphEntry`] object.
     pub alias: Vec<String>,
+    /// From the official docs:
+    /// > store selected filters for linked references on page-level. object with booleans.
+    ///
+    /// We just return the property value -- you'll have to parse it yourself.
     pub filters: Option<String>,
+    /// Whether this page should be included in an export.
     pub public: bool,
+    /// Whether this page is excluded from the global graph view.
     pub exclude_from_graph_view: bool,
+    /// Any other properties.
     pub custom: FxHashMap<String, String>,
 }
 
@@ -26,7 +43,7 @@ impl TryFrom<FxHashMap<String, String>> for DocumentProperties {
             match key.as_str() {
                 "icon" => properties.icon = Some(value),
                 "title" => properties.title = Some(value),
-                "tags" => properties.tags = value.split(',').map(String::from).collect(),
+                "tags" => properties.tags = Some(value),
                 "template" => properties.template = Some(value),
                 "template-including-parent" => {
                     properties.template_including_parent = Some(value.trim() == "true");
@@ -53,8 +70,8 @@ impl fmt::Display for DocumentProperties {
             writeln!(f, "title:: {title}")?;
         }
 
-        if !self.tags.is_empty() {
-            writeln!(f, "tags:: {}", self.tags.join(","))?;
+        if let Some(tags) = &self.tags {
+            writeln!(f, "tags:: {tags}")?;
         }
 
         if let Some(template) = &self.template {

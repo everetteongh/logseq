@@ -20,7 +20,7 @@ fn task_handling() {
 
     today.append(block);
 
-    today.save().unwrap();
+    today.save_to_disk().unwrap();
 
     let mut today_content = fs::read_to_string(&today.path).unwrap();
     assert!(today_content.contains("TODO"));
@@ -31,7 +31,7 @@ fn task_handling() {
         }
     }
 
-    today.save().unwrap();
+    today.save_to_disk().unwrap();
 
     today_content = fs::read_to_string(&today.path).unwrap();
     assert_eq!(today_content.contains("TODO"), false);

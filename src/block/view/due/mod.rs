@@ -1,25 +1,33 @@
+/// A due block.
 mod block;
+/// The kind of due.
 mod kind;
+/// A due repeater.
 mod repeater;
-use std::{fmt, str::FromStr};
-
-pub use block::*;
-pub use kind::*;
-pub use repeater::*;
-use time::{Date, Time, Weekday, error::InvalidVariant};
 
 use crate::{
     consts::{DATE_FORMAT, DUE_REGEX, TIME_FORMAT},
-    error::{Alleged, ParseDueError},
+    error::{Logseq, ParseDueError},
 };
+pub use block::*;
+pub use kind::*;
+pub use repeater::*;
+use std::{fmt, str::FromStr};
+use time::{Date, Time, Weekday, error::InvalidVariant};
 
+/// Parser for SCHEDULED/DEADLINE. This follows standard [Org Mode format](https://orgmode.org/manual/Deadlines-and-Scheduling.html), so might be delegated to an Org dependency in the future.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Due {
+    /// The due date.
     pub date: Date,
+    /// The due day.
     pub day: Weekday,
+    /// The due time.
     pub time: Option<Time>,
+    /// The due repeater.
     pub repeater: Option<DueRepeater>,
+    /// The due kind; one of [`DueKind::Scheduled`], [`DueKind::Deadline`].
     pub kind: DueKind,
 }
 
@@ -50,7 +58,7 @@ impl fmt::Display for Due {
 }
 
 impl FromStr for Due {
-    type Err = Alleged;
+    type Err = Logseq;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if let Some(captures) = DUE_REGEX.captures(s) {
@@ -60,12 +68,12 @@ impl FromStr for Due {
                 .and_then(|m| DueKind::from_str(m.as_str()))?;
             let date = captures
                 .get(2)
-                .ok_or(Alleged::ParseScheduled(ParseDueError::InvalidInput))
-                .and_then(|m| Date::parse(m.as_str(), DATE_FORMAT).map_err(Alleged::from))?;
+                .ok_or(Logseq::ParseScheduled(ParseDueError::InvalidInput))
+                .and_then(|m| Date::parse(m.as_str(), DATE_FORMAT).map_err(Logseq::from))?;
             let day = captures
                 .get(3)
-                .ok_or(Alleged::ParseScheduled(ParseDueError::InvalidInput))
-                .and_then(|m| custom_parse_weekday(m.as_str()).map_err(Alleged::from))?;
+                .ok_or(Logseq::ParseScheduled(ParseDueError::InvalidInput))
+                .and_then(|m| custom_parse_weekday(m.as_str()).map_err(Logseq::from))?;
             let time = captures
                 .get(4)
                 .map(|m| m.as_str())
@@ -88,7 +96,7 @@ impl FromStr for Due {
     }
 }
 
-// HACK: `time`'s `Weekday::from_str` doesn't support shortened weekdays 😮‍💨
+/// Parse strings as weekdays with support for shortened weekdays.
 fn custom_parse_weekday(s: &str) -> Result<Weekday, InvalidVariant> {
     match s.trim().to_lowercase().as_str() {
         "mon" | "monday" => Ok(Weekday::Monday),
@@ -102,6 +110,7 @@ fn custom_parse_weekday(s: &str) -> Result<Weekday, InvalidVariant> {
     }
 }
 
+/// Convert a weekday string into its shortened counterpart.
 fn shorten_weekday(s: &str) -> &str {
     match s.trim() {
         "Monday" => "Mon",

@@ -1,4 +1,6 @@
+/// Task priority -- one of [#A], [#B], or [#C].
 mod priority;
+/// Task status.
 mod status;
 
 pub use priority::*;
@@ -11,25 +13,38 @@ use crate::{
 };
 use std::str::FromStr;
 
+/// View over a [`Block`] which starts with a [`TaskStatus`] marker..
 #[derive(Debug, Clone)]
 pub struct Task<'a> {
+    /// Underlying block.
     pub block: &'a Block,
+    /// The task's status.
     pub status: TaskStatus,
+    /// The task's label.
     pub label: String,
+    /// The task's priority.
     pub priority: Option<TaskPriority>,
+    /// The task's due date.
     pub due: Option<Due>,
 }
 
+/// Same as [`Task`], but mutable.
 #[derive(Debug)]
 pub struct TaskMut<'a> {
+    /// Underlying mutable block.
     pub block: &'a mut Block,
+    /// The task's status.
     pub status: TaskStatus,
+    /// The task's label.
     pub label: String,
+    /// The task's priority.
     pub priority: Option<TaskPriority>,
+    /// The task's due date.
     pub due: Option<Due>,
 }
 
 impl TaskMut<'_> {
+    /// Update the status of a task.
     pub fn status(&mut self, status: &TaskStatus) {
         self.block.markdown =
             self.block

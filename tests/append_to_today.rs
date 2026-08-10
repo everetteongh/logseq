@@ -17,7 +17,7 @@ fn append_to_today() {
 
     today.append(block);
 
-    today.save().unwrap();
+    today.save_to_disk().unwrap();
 
     let today_content = fs::read_to_string(today.path).unwrap();
     assert!(today_content.contains("Hello from Rust code!"));

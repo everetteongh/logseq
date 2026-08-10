@@ -1,12 +1,15 @@
 use crate::{
     consts::EXCLUDE,
-    error::{Alleged, GraphBuilderError},
+    error::{GraphBuilderError, Logseq},
     graph::Graph,
 };
 use std::path::PathBuf;
 
+/// A helper object for constructing a [`Graph`].
 pub struct GraphBuilder {
+    /// Paths for the [`WalkDir`] directory crawler to exclude.
     exclude: &'static [&'static str],
+    /// The root of the Logseq graph.
     dir: Option<PathBuf>,
 }
 
@@ -20,17 +23,23 @@ impl Default for GraphBuilder {
 }
 
 impl GraphBuilder {
+    /// Paths for the [`walkdir::WalkDir`] directory crawler to exclude.
     #[must_use]
     pub const fn exclude(mut self, exclude: &'static [&'static str]) -> Self {
         self.exclude = exclude;
         self
     }
+    /// The root of the Logseq graph.
     #[must_use]
     pub fn dir(mut self, dir: PathBuf) -> Self {
         self.dir = Some(dir);
         self
     }
-    pub fn build(self) -> Result<Graph, Alleged> {
+    /// Try to construct a [`Graph`] object from the builder fields.
+    ///
+    /// # Errors
+    /// Fails if the root directory (`self.dir`) is unset.
+    pub fn build(self) -> Result<Graph, Logseq> {
         let dir = self.dir.ok_or(GraphBuilderError::UndefinedRootDirectory)?;
 
         Ok(Graph {

@@ -4,12 +4,18 @@ use uuid::Uuid;
 
 use crate::error::BlockError;
 
+/// Block properties. See [the official Logseq documentation](https://github.com/logseq/docs/blob/08f855f24d66e4509b7ea808554c13b4649e6ee1/pages/Built-in%20Properties.md).
 #[derive(Debug, Clone)]
 pub struct BlockProperties {
+    /// Designates a page/block as a template.
     pub template: Option<String>,
+    /// Specifies whether the parent level content of a block should be included when using a template.
     pub template_including_parent: Option<bool>,
+    /// Whether or not this block is collapsed.
     pub collapsed: bool,
+    /// The unique [`Uuid`] for this block.
     pub id: Uuid,
+    /// Any other properties.
     pub custom: FxHashMap<String, String>,
 }
 

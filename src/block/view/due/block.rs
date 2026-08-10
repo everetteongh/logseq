@@ -3,13 +3,17 @@ use crate::{
     error::ParseDueError,
 };
 
+/// A view over a Logseq block for [`Due`]. Should be revised in the future; currently exists just to provide a `plain` method.
 #[derive(Debug, Clone)]
 pub struct DueBlock<'a> {
+    /// The underlying block.
     pub block: &'a Block,
+    /// The block's associated [`Due`].
     pub due: Due,
 }
 
 impl DueBlock<'_> {
+    /// Get a plaintext representation of this block's content.
     #[must_use]
     pub fn plain(&self) -> String {
         self.block
@@ -32,9 +36,12 @@ impl<'a> TryFrom<&'a Block> for DueBlock<'a> {
     }
 }
 
+/// Same as [`DueBlock`], but mutable access. More-or-less unimplemented.
 #[derive(Debug)]
 pub struct DueBlockMut<'a> {
+    /// The underlying block, mutable.
     pub block: &'a mut Block,
+    /// The block's associated [`Due`].
     pub due: Due,
 }
 

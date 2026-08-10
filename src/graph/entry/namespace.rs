@@ -1,6 +1,7 @@
 use crate::consts::NAMESPACE_DELIM;
 use std::fmt;
 
+/// A Logseq page namespace. Used to build page filenames and represent a virtual directory structure for pages.
 #[derive(Debug)]
 pub struct Namespace(pub Vec<String>);
 
