@@ -1,5 +1,5 @@
 #[pyo3::pymodule]
-mod alleged {
+mod logseq {
     use pyo3::prelude::*;
 
     #[pyfunction]

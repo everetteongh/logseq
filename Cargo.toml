@@ -7,8 +7,8 @@ authors = ["stel <stel@national.shitposting.agency>"]
 edition = "2024"
 description = "Opinionated Logseq graph handling in Rust"
 keywords = ["logseq", "markdown", "markdown-parser", "logseq-graph"]
-homepage = "https://github.com/0xstel-contrib/alleged"
-repository = "https://codeberg.org/0xstel/alleged"
+homepage = "https://github.com/0xstel-contrib/logseq"
+repository = "https://codeberg.org/0xstel/logseq"
 readme = "README.md"
 license = "0BSD"
 
