@@ -1,21 +1,26 @@
-use crate::error::TaskMarkerError;
+use crate::error::TaskStatusError;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 
+/// The status of a task. We only support the TODO/DOING Logseq workflow at the moment.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-/// The status marker for a task. Only supports the TODO/DOING/DONE workflow. See [the official Logseq documentation](https://docs.logseq.com/#/page/markdown?anchor=ls-block-6a0878b2-a790-4f19-b25e-d69452c43ccf)
-pub enum TaskMarker {
+pub enum TaskStatus {
+    /// Represents `TODO`
     ToDo,
+    /// Represents `DOING`
     Doing,
+    /// Represents `DONE`
     Done,
+    /// Represents `CANCELLED`
     Cancelled,
+    /// Represents `WAITING`
     Waiting,
 }
 
-impl FromStr for TaskMarker {
-    type Err = TaskMarkerError;
+impl FromStr for TaskStatus {
+    type Err = TaskStatusError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -24,12 +29,12 @@ impl FromStr for TaskMarker {
             "DONE" => Ok(Self::Done),
             "CANCELED" | "CANCELLED" => Ok(Self::Cancelled),
             "WAITING" => Ok(Self::Waiting),
-            _ => Err(TaskMarkerError::InvalidMarker),
+            _ => Err(TaskStatusError::InvalidMarker),
         }
     }
 }
 
-impl fmt::Display for TaskMarker {
+impl fmt::Display for TaskStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::ToDo => write!(f, "TODO"),

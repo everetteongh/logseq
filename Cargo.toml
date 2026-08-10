@@ -2,10 +2,10 @@
 members = ["bindings/*"]
 
 [workspace.package]
-version = "0.2.3"
+version = "0.1.0"
 authors = ["stel <stel@national.shitposting.agency>"]
 edition = "2024"
-description = "Read/write to Logseq note graphs in Rust"
+description = "Opinionated library for Logseq graph handling"
 keywords = ["logseq", "markdown", "markdown-parser", "logseq-graph"]
 homepage = "https://github.com/0xstel-contrib/alleged"
 repository = "https://codeberg.org/0xstel/alleged"
@@ -16,12 +16,16 @@ license = "0BSD"
 time = { version = "0.3.54", features = ["formatting", "macros", "parsing", "local-offset"] }
 pyo3 = "0.29.0"
 
+[workspace.lints.rust]
+missing_docs = { level = "warn", priority = -1 }
+
 [workspace.lints.clippy]
 nursery = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
+missing_docs_in_private_items = { level = "warn", priority = -1 }
 
 [package]
-name = "alleged-lib"
+name = "logseq"
 exclude = [
     "/.cargo/",
     "/assets/",
@@ -46,15 +50,11 @@ regex = ["dep:regex"]
 regex-lite = ["dep:regex-lite"]
 serde = ["dep:serde", "time/serde"]
 python = ["dep:pyo3"]
-icalendar = ["dep:icalendar", "dep:chrono"]
-hash = ["dep:twox-hash", "dep:hex"]
 
 [dependencies]
-chrono = { version = "0.4.0", optional = true }
 comrak = { version = "0.54.0", default-features = false }
-hex = { version = "0.4.0", optional = true }
 humantime = "2.4.0"
-icalendar = { version = "0.17.0", optional = true }
+indexmap = "2.14.0"
 nutype = "0.7.0"
 pyo3 = { workspace = true, optional = true }
 regex = { version = "1.13.0", optional = true }
@@ -63,6 +63,5 @@ rustc-hash = "2.1.0"
 serde = { version = "1.0.0", features = ["derive"], optional = true }
 thiserror = "2.0.0"
 time = { workspace = true }
-twox-hash = { version = "2.1.0", optional = true }
 uuid = { version = "1.24.0", features = ["v4"] }
 walkdir = "2.5.0"

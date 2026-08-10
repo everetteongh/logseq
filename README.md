@@ -1,62 +1,10 @@
-# alleged-lib
+# logseq
 
 Simple library to read/write to Logseq note graphs in Rust, built with [comrak](https://lib.rs/crates/comrak).
 
 ## Usage
 
-Append to today's journal entry ([`examples/append_to_today.rs`](./examples/append_to_today.rs)):
-
-```rust
-use alleged_lib::graph::Graph;
-use std::fs;
-
-fn main() {
-    let notes = Graph::builder()
-        .root("assets/example_graph".into())
-        .build()
-        .unwrap();
-
-    let mut today = notes.today().unwrap();
-    today.append_block("Hello from Rust code!", 0).unwrap();
-
-    notes.save(&mut today).unwrap();
-
-    let today_content = fs::read_to_string(today.path()).unwrap();
-    assert!(today_content.contains("Hello from Rust code!"));
-}
-```
-
-Mark all tasks in today's journal entry as done ([`examples/mark_tasks_done.rs`](./examples/mark_tasks_done.rs)):
-
-```rust
-use alleged_lib::{
-    block::{Block, TaskMarker},
-    ext::comrak::Arena,
-    graph::{Document, Graph},
-};
-
-fn main() {
-    let notes = Graph::builder()
-        .root("assets/example_graph".into())
-        .build()
-        .unwrap();
-
-    let mut today = notes.today().unwrap();
-
-    let arena = Arena::new();
-    let Document(root, blocks) = today.blocks(&arena);
-    for mut block in blocks {
-        if let Block::Task(ref mut task, _depth) = block {
-            task.mark(TaskMarker::Done);
-        }
-    }
-
-    today.update_buffer(root).unwrap();
-    notes.save(&mut today).unwrap();
-}
-```
-
-Additional documentation is available at [docs.rs](https://docs.rs/alleged-lib/latest/alleged_lib/)
+See [tests](./tests/).
 
 ## Logseq Support
 
@@ -64,9 +12,9 @@ Currently, the latest version of [Logseq OG](https://github.com/Logseq/OG) (read
 
 - "Timetracking" should be **disabled**
 - "Preferred workflow" should be **TODO/DOING**
-- Graph reindexing is currently TODO, so newly-created journal entry files aren't yet visible in Logseq ([tracking issue](https://codeberg.org/0xstel/alleged/issues/4))
+- Graph reindexing is currently TODO, so newly-created journal entry files aren't yet visible in Logseq ([tracking issue](https://codeberg.org/0xstel/logseq/issues/4))
 
-Logseq DB version support is TODO -- see [the tracking issue](https://codeberg.org/0xstel/alleged/issues/1)
+Logseq DB version support is also TODO -- see [the tracking issue](https://codeberg.org/0xstel/logseq/issues/1)
 
 ## Crate Features
 
@@ -76,4 +24,4 @@ Logseq DB version support is TODO -- see [the tracking issue](https://codeberg.o
 
 ## Contributing
 
-Contributions -- code or issues -- are welcome! The repository on [Codeberg](https://codeberg.org/0xstel/alleged) is ideal, but contributions are also accepted on the [GitHub mirror](https://github.com/0xstel-contrib/alleged) :>
+Contributions -- code or issues -- are welcome! The repository on [Codeberg](https://codeberg.org/0xstel/logseq) is ideal, but contributions are also accepted on the [GitHub mirror](https://github.com/0xstel-contrib/logseq) :>

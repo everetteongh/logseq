@@ -1,95 +1,117 @@
-mod r#impl;
-mod label;
-mod node;
-mod text;
+/// Block-level properties.
+mod properties;
+pub use properties::*;
 
-pub use r#impl::*;
-pub use label::*;
-pub use node::*;
-pub use text::*;
+/// A view over a block, like a [`Task`].
+pub mod view;
 
-use comrak::{
-    Arena, Node,
-    nodes::{AstNode, NodeValue},
+use crate::{
+    block::view::{DueBlock, DueBlockMut, Task, TaskMut},
+    consts::COMRAK_OPTIONS,
 };
+use comrak::{
+    Arena,
+    nodes::{AstNode, NodeValue},
+    parse_document,
+};
+use std::fmt;
 use uuid::Uuid;
 
-pub(crate) fn extract_text<'a>(node: &'a AstNode<'a>, text: &mut String) {
+/// Push the content of a given [`AstNode`] into the given buffer. Like [`comrak::arena_tree::Node::collect_text_append`], but uses newlines for line breaks.
+fn plain_text<'a>(node: &'a AstNode<'a>, buf: &mut String) {
     match &node.data().value {
-        NodeValue::Text(inner) => text.push_str(&inner.clone()),
-        NodeValue::SoftBreak => text.push('\n'),
+        NodeValue::Text(text) => buf.push_str(text),
+        NodeValue::SoftBreak | NodeValue::LineBreak => buf.push('\n'),
+        NodeValue::Item(_) => {}
         _ => {
-            for child in node
-                .children()
-                .filter(|c| !matches!(c.data().value, NodeValue::Item(_)))
-            {
-                extract_text(child, text);
+            for child in node.children() {
+                plain_text(child, buf);
             }
         }
     }
 }
 
-pub(crate) fn add_logseq_id_to<'a>(block_node: Node<'a>, arena: &'a Arena<'a>) {
-    let softbreak_node = arena.alloc(AstNode::from(NodeValue::SoftBreak));
-    let text_node = arena.alloc(AstNode::from(NodeValue::Text(
-        format!("id:: {}", Uuid::new_v4()).into(),
-    )));
-    block_node.append(softbreak_node);
-    block_node.append(text_node);
+/// A [Logseq block](https://github.com/logseq/docs/blob/08f855f24d66e4509b7ea808554c13b4649e6ee1/pages/term___block.md).
+#[derive(Default, Debug, Clone)]
+pub struct Block {
+    /// The markdown of this block. Doesn't include a leading bullet point.
+    pub markdown: String,
+    /// This block's properties. Contains the ID.
+    pub properties: BlockProperties,
+    /// The block's parent, if it exists.
+    pub parent: Option<Uuid>,
+    /// The block's children.
+    pub children: Vec<Uuid>,
+    /// The block's depth (i.e. number of parents).
+    pub depth: usize,
 }
 
-/// A Logseq block -- either text or a task. Each variant is a tuple with the underlying object and the block's depth.
-#[derive(Debug, Clone)]
-pub enum Block<'a> {
-    Text(Text<'a>, usize),
-    Task(Task<'a>, usize),
-}
-
-impl<'a> Block<'a> {
-    pub(crate) fn node(&self) -> Node<'a> {
-        match self {
-            Self::Text(text, _) => text.inner.as_ref(),
-            Self::Task(task, _) => task.inner.as_ref(),
+impl Block {
+    /// Create a new block with defaults.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+    /// Extract the non-markdown content of this block.
+    #[must_use]
+    pub fn content(&self) -> String {
+        let mut buf = String::new();
+        let arena = Arena::new();
+        let block_root = parse_document(&arena, &self.markdown, &COMRAK_OPTIONS);
+        for child in block_root.children() {
+            match &child.data().value {
+                NodeValue::Item(_) => {}
+                _ => plain_text(child, &mut buf),
+            }
         }
+
+        buf
     }
-}
-
-impl<'a> From<Task<'a>> for Block<'a> {
-    fn from(task: Task<'a>) -> Self {
-        let depth = task.inner.depth();
-        Self::Task(task, depth)
-    }
-}
-
-impl<'a> From<Text<'a>> for Block<'a> {
-    fn from(text: Text<'a>) -> Self {
-        let depth = text.inner.depth();
-        Self::Text(text, depth)
-    }
-}
-
-impl<'a> From<TextBlockNode<'a>> for Block<'a> {
-    fn from(inner: TextBlockNode<'a>) -> Self {
-        let depth = inner.depth();
-        Self::Text(Text::from(inner), depth)
-    }
-}
-
-impl<'a> From<TaskBlockNode<'a>> for Block<'a> {
-    fn from(inner: TaskBlockNode<'a>) -> Self {
-        let depth = inner.depth();
-        Self::Task(Task::from(inner), depth)
-    }
-}
-
-impl<'a> TryFrom<Node<'a>> for Block<'a> {
-    type Error = TextBlockNodeError;
-
-    fn try_from(node: Node<'a>) -> Result<Self, Self::Error> {
-        if let Ok(task_node) = TaskBlockNode::try_new(node) {
-            Ok(Self::from(task_node))
+    /// Extract the plaintext content of this block. Like [`Self::content`], but handles trimming [`view::Due`]/[`Task`] data.
+    #[must_use]
+    pub fn plain(&self) -> String {
+        if let Some(task) = self.task() {
+            task.label
+        } else if let Some(due) = self.due() {
+            due.plain()
         } else {
-            Ok(Self::from(TextBlockNode::try_new(node)?))
+            self.content()
         }
+    }
+    /// The task view over this block, if it's a task.
+    #[must_use]
+    pub fn task(&self) -> Option<Task<'_>> {
+        Task::try_from(self).ok()
+    }
+    /// Same as [`Self::task`], but mutable.
+    #[must_use]
+    pub fn task_mut(&mut self) -> Option<TaskMut<'_>> {
+        TaskMut::try_from(self).ok()
+    }
+    /// The due view over this block, if it has `SCHEDULED`/`DEADLINE`.
+    #[must_use]
+    pub fn due(&self) -> Option<DueBlock<'_>> {
+        DueBlock::try_from(self).ok()
+    }
+    /// Same as [`Self::due`], but mutable.
+    #[must_use]
+    pub fn due_mut(&mut self) -> Option<DueBlockMut<'_>> {
+        DueBlockMut::try_from(self).ok()
+    }
+}
+
+impl fmt::Display for Block {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let indent = "\t".repeat(self.depth);
+
+        for (i, line) in self.markdown.lines().enumerate() {
+            if i == 0 {
+                writeln!(f, "{indent}- {line}")?;
+            } else {
+                writeln!(f, "{indent}  {line}")?;
+            }
+        }
+
+        write!(f, "{indent}  {}", self.properties.to_string().trim_end())
     }
 }

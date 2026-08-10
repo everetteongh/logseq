@@ -1,34 +1,35 @@
+/// Helper to construct a Logseq graph.
 mod builder;
+/// Logseq graph entries.
 mod entry;
+
 pub use builder::*;
 pub use entry::*;
-
-use crate::error::Alleged;
-use comrak::Options;
-use std::{ffi::OsStr, fs, path::PathBuf, sync::Arc};
 use time::{Date, OffsetDateTime};
+
+use crate::error::Logseq;
+use std::{ffi::OsStr, path::PathBuf};
 use walkdir::{DirEntry, WalkDir};
 
-/// Representation of a Logseq graph
+/// Representation of a Logseq graph.
 pub struct Graph {
-    comrak_options: Arc<Options<'static>>,
-    exclude: Vec<String>,
-    /// The path to your Logseq graph root -- i.e., a folder with the following subdirectories:
-    /// - `journals/`
-    /// - `logseq/`
-    /// - `pages/`
-    pub root: PathBuf,
+    /// Paths for the [`WalkDir`] directory crawler to exclude.
+    exclude: &'static [&'static str],
+    /// The graph's root.
+    pub dir: PathBuf,
 }
 
 impl Graph {
+    /// Check `self.exclude` to see whether or not the entry is excluded.
     fn is_excluded(&self, entry: &DirEntry) -> bool {
         entry
             .file_name()
             .to_str()
-            .is_some_and(|name| self.exclude.contains(&name.to_string()))
+            .is_some_and(|name| self.exclude.contains(&name))
     }
+    /// Shorthand for [`walkdir::WalkDir`] crawler access. Filtered by `Self::is_excluded` and requiring the `.md` extension.
     fn markdown_files(&self) -> impl Iterator<Item = DirEntry> {
-        WalkDir::new(&self.root)
+        WalkDir::new(&self.dir)
             .follow_links(true)
             .into_iter()
             .filter_entry(|e| !self.is_excluded(e))
@@ -37,69 +38,68 @@ impl Graph {
                 entry.file_type().is_file() && entry.path().extension() == Some(OsStr::new("md"))
             })
     }
-    /// Create an instance of [`Graph`] with the builder pattern
+    /// Convenient access to the [`GraphBuilder`].
     #[must_use]
     pub fn builder() -> GraphBuilder {
         GraphBuilder::default()
     }
-    /// All markdown files in the Logseq graph directory ([`Graph::root`])
+    /// All entries in the graph.
     pub fn entries(&self) -> impl Iterator<Item = GraphEntry> {
         self.markdown_files()
-            .filter_map(|entry| GraphEntry::new(entry.into_path(), &self.comrak_options).ok())
+            .filter_map(|entry| GraphEntry::try_new(entry.into_path()).ok())
     }
-    /// All markdown files in the Logseq graph's `journals` subdirectory
+    /// All journal entries in the graph.
     pub fn journals(&self) -> impl Iterator<Item = GraphEntry> {
         self.entries()
             .filter(|entry| matches!(entry.kind, EntryKind::Journal(_)))
     }
-    /// All markdown files in the Logseq graph's `pages` subdirectory
+    /// All non-journal pages in the graph.
     pub fn pages(&self) -> impl Iterator<Item = GraphEntry> {
         self.entries()
             .filter(|entry| matches!(entry.kind, EntryKind::Page(_)))
     }
-    fn entry(&self, entry: &EntryKind) -> Result<GraphEntry, Alleged> {
+    /// Construct a [`GraphEntry`] from the given [`EntryKind`].
+    fn entry(&self, entry: &EntryKind) -> Result<GraphEntry, Logseq> {
         let relative_path: PathBuf = entry.as_relative_path().into();
-        GraphEntry::new(self.root.join(relative_path), &self.comrak_options)
+        GraphEntry::try_new(self.dir.join(relative_path))
     }
-    /// Get a journal entry from the given date
+    /// Try to get a [`GraphEntry`] for the given date.
     ///
     /// # Errors
-    /// If your graph root is valid, this should never fail.
-    pub fn journal<D>(&self, date: D) -> Result<GraphEntry, Alleged>
+    /// Fails if the given path doesn't reside in a `journals/` or `pages/` directory.
+    pub fn journal<D>(&self, date: D) -> Result<GraphEntry, Logseq>
     where
         D: Into<Date>,
     {
         self.entry(&EntryKind::Journal(date.into()))
     }
-    /// Ease-of-access to today's journal entry
+    /// Convenience function to access today's journal entry. Scoped to the local timezone via [`OffsetDateTime::now_local`].
     ///
     /// # Errors
-    /// If your graph root is valid, this should never fail.
-    pub fn today(&self) -> Result<GraphEntry, Alleged> {
+    /// Fails if the underlying `Self::journal` call does.
+    pub fn today(&self) -> Result<GraphEntry, Logseq> {
         self.journal(OffsetDateTime::now_local()?.date())
     }
-    /// Get a page by its key. Doesn't validate whether or not an entry exists, so if you need such validation, you should probably call [`std::path::Path::exists`] on the value of [`GraphEntry::path`]
+    /// Convenience page access function. First checks aliases, and if no aliases match the given `key`, returns a new entry from that key after turning it into a [`Namespace`].
     ///
     /// # Errors
-    /// If your graph root is valid, this should never fail.
-    pub fn page(&self, key: &str) -> Result<GraphEntry, Alleged> {
-        for mut entry in self.entries() {
-            if let Some(props) = entry.properties()
-                && props.alias.iter().any(|a| a == key)
+    /// Fails if the given path doesn't reside in a `journals/` or `pages/` directory.
+    pub fn page(&self, key: &str) -> Result<GraphEntry, Logseq> {
+        for entry in self.entries() {
+            if let Some(ref properties) = entry.document.properties
+                && properties.alias.iter().any(|a| a == key)
             {
                 return Ok(entry);
             }
         }
 
-        self.entry(&EntryKind::Page(key.to_string()))
+        self.entry(&EntryKind::Page(Namespace::from(key.to_string())))
     }
-    /// Save a Logseq graph entry to disk
+    /// Save a graph entry to disk. Prefer using [`GraphEntry::save_to_disk`].
     ///
     /// # Errors
-    /// Throws an error if the filesystem write fails.
-    pub fn save(&self, entry: &mut GraphEntry) -> Result<(), Alleged> {
-        fs::write(entry.path(), entry.buffer().to_string().as_bytes())?;
-
-        Ok(())
+    /// Fails if the [`std::fs::write`] call does.
+    pub fn save_to_disk(&self, entry: &GraphEntry) -> Result<(), Logseq> {
+        entry.save_to_disk()
     }
 }

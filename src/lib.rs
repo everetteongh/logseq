@@ -1,26 +1,27 @@
 #![warn(clippy::unwrap_used)]
 #![doc = include_str!("../README.md")]
 
-/// In [Logseq](https://logseq.com) (and other outliners), each bullet is a "block." For our purposes, a block ([`block::Block`]) is either [`block::Text`] or [`block::Task`]
+/// [Block](https://github.com/logseq/docs/blob/08f855f24d66e4509b7ea808554c13b4649e6ee1/pages/term___block.md)-level code, including views over blocks, like [`block::view::Task`] and [`block::view::DueBlock`].
 pub mod block;
+/// Internal constants.
 pub(crate) mod consts;
-/// Error types
+/// Document-specific code.
+pub mod document;
+/// Error types.
 pub mod error;
-/// Graph-related code, and the main entrypoint of this library
+/// Graph code, providing the entrypoint for working with a graph directory.
 pub mod graph;
-/// Page and block properties.
+/// Module containing a common [`properties::Properties`] trait for block and document properties.
 pub mod properties;
 
-/// Some functions need the [`comrak::Arena`] type. This module exposes the entire [`comrak`] library so you don't need to add it to your own crate to use it
-pub mod ext {
-    pub use comrak;
-}
-
-/// Convenience module for glob imports (`use alleged_lib::prelude::*`)
+/// Convenience module for glob imports.
 pub mod prelude {
-    pub use crate::block::*;
+    pub use crate::block::{
+        Block, BlockProperties,
+        view::{Task, TaskMut, TaskPriority, TaskStatus},
+    };
+    pub use crate::document::*;
     pub use crate::error::*;
-    pub use crate::ext::comrak::Arena;
     pub use crate::graph::*;
     pub use crate::properties::*;
 }

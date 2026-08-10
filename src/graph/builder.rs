@@ -1,90 +1,50 @@
 use crate::{
-    block::{BlockImpl, add_logseq_id_to},
-    consts::{COMRAK_OPTIONS, DEFAULT_EXCLUDE},
-    error::{Alleged, GraphBuilderError},
-    graph::{Document, Graph},
-    properties::Properties,
+    consts::EXCLUDE,
+    error::{GraphBuilderError, Logseq},
+    graph::Graph,
 };
-use comrak::{Arena, Options};
-use std::{path::PathBuf, sync::Arc};
+use std::path::PathBuf;
 
-/// Helper struct to construct a [`Graph`] object. You only need to define `root`, everything else has defaults :)
+/// A helper object for constructing a [`Graph`].
 pub struct GraphBuilder {
-    comrak_options: Option<Options<'static>>,
-    exclude: Vec<String>,
-    root: Option<PathBuf>,
-    populate_ids: bool,
+    /// Paths for the [`WalkDir`] directory crawler to exclude.
+    exclude: &'static [&'static str],
+    /// The root of the Logseq graph.
+    dir: Option<PathBuf>,
 }
 
 impl Default for GraphBuilder {
     fn default() -> Self {
         Self {
-            comrak_options: None,
-            exclude: DEFAULT_EXCLUDE.into_iter().map(String::from).collect(),
-            root: None,
-            populate_ids: false,
+            exclude: &EXCLUDE,
+            dir: None,
         }
     }
 }
 
 impl GraphBuilder {
+    /// Paths for the [`walkdir::WalkDir`] directory crawler to exclude.
     #[must_use]
-    /// Options to pass to the underlying [`comrak`] markdown parser
-    pub fn comrak_options(mut self, options: Options<'static>) -> Self {
-        self.comrak_options = Some(options);
-        self
-    }
-    #[must_use]
-    /// List of file/directory names to exclude from the directory walker
-    pub fn exclude(mut self, exclude: Vec<String>) -> Self {
+    pub const fn exclude(mut self, exclude: &'static [&'static str]) -> Self {
         self.exclude = exclude;
         self
     }
+    /// The root of the Logseq graph.
     #[must_use]
-    /// The root of your Logseq graph
-    pub fn root(mut self, root: PathBuf) -> Self {
-        self.root = Some(root);
+    pub fn dir(mut self, dir: PathBuf) -> Self {
+        self.dir = Some(dir);
         self
     }
-    /// Whether or not to pre-populate blocks with IDs. Defaults to `true`
-    #[must_use]
-    pub const fn populate_ids(mut self) -> Self {
-        self.populate_ids = true;
-        self
-    }
-    /// Try to build a [`crate::graph::Graph`]
+    /// Try to construct a [`Graph`] object from the builder fields.
     ///
     /// # Errors
-    /// Fails if the root directory isn't set.
-    pub fn build(self) -> Result<Graph, Alleged> {
-        let root = self.root.ok_or(GraphBuilderError::UndefinedRootDirectory)?;
-        let comrak_options = Arc::new(
-            self.comrak_options
-                .unwrap_or_else(|| COMRAK_OPTIONS.clone()),
-        );
-        let graph = Graph {
-            comrak_options,
-            root,
+    /// Fails if the root directory (`self.dir`) is unset.
+    pub fn build(self) -> Result<Graph, Logseq> {
+        let dir = self.dir.ok_or(GraphBuilderError::UndefinedRootDirectory)?;
+
+        Ok(Graph {
             exclude: self.exclude,
-        };
-
-        if self.populate_ids {
-            for mut entry in graph.entries() {
-                let arena = Arena::new();
-                let Document(root, blocks) = entry.blocks(&arena);
-
-                for block in blocks {
-                    let Properties(properties) = block.properties();
-                    if !properties.contains_key("id") {
-                        add_logseq_id_to(block.node(), &arena);
-                    }
-                }
-
-                entry.update_buffer(root)?;
-                graph.save(&mut entry)?;
-            }
-        }
-
-        Ok(graph)
+            dir,
+        })
     }
 }

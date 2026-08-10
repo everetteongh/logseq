@@ -1,5 +1,5 @@
 [package]
-name = "alleged-python"
+name = "logseq-python"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -12,10 +12,10 @@ license.workspace = true
 workspace = true
 
 [lib]
-name = "alleged"
+name = "logseq"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-alleged-lib = { path = "../../" }
+logseq = { path = "../../" }
 pyo3 = { workspace = true }
