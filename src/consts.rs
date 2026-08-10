@@ -6,7 +6,6 @@ use regex_lite::Regex;
 use std::sync::LazyLock;
 use time::{format_description::StaticFormatDescription, macros::format_description};
 
-pub const GRAPH_LAYOUT: [&str; 3] = ["journals", "logseq", "pages"];
 pub static EXCLUDE: [&str; 2] = ["logseq", "contents.md"];
 
 pub static COMRAK_OPTIONS: LazyLock<Options<'static>> = LazyLock::new(|| Options {
@@ -42,3 +41,6 @@ pub static DUE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 pub const SCHEDULED_DELIM: &str = "SCHEDULED:";
 pub const DEADLINE_DELIM: &str = "DEADLINE:";
 pub const DUE_DELIMS: [&str; 2] = [SCHEDULED_DELIM, DEADLINE_DELIM];
+
+// TODO: Allow changing this
+pub const NAMESPACE_DELIM: &str = "___";

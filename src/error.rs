@@ -6,8 +6,9 @@ use thiserror::Error;
 use time::error::{IndeterminateOffset, InvalidVariant, Parse};
 
 #[derive(Error, Debug)]
-/// The primary error type
 pub enum Alleged {
+    #[error("Block error: {0}")]
+    Block(#[from] BlockError),
     #[error("Graph-related failure: {0}")]
     Graph(#[from] GraphError),
     #[error("Graph builder failed: {0}")]
@@ -38,6 +39,12 @@ impl From<Alleged> for PyErr {
         let error_str = format!("{error:?}");
         PyValueError::new_err(error_str)
     }
+}
+
+#[derive(Error, Debug)]
+pub enum BlockError {
+    #[error("Invalid block ID: {0}")]
+    InvalidID(String),
 }
 
 #[derive(Error, Debug)]

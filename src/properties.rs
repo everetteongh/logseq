@@ -1,38 +1,67 @@
+use crate::{block::BlockProperties, consts::PROPERTY_REGEX, document::DocumentProperties};
 use rustc_hash::FxHashMap;
-use std::fmt;
-use uuid::Uuid;
 
-#[derive(Default, Debug, Clone)]
-pub struct Property(pub String, pub String);
+fn take_properties(input: &mut String, stop_at_content: bool) -> FxHashMap<String, String> {
+    let mut properties = FxHashMap::default();
+    let mut lines: Vec<&str> = input.lines().collect();
 
-impl fmt::Display for Property {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let Self(key, value) = self;
-
-        write!(f, "{key}:: {value}")
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Properties(pub FxHashMap<String, String>);
-
-impl Default for Properties {
-    fn default() -> Self {
-        let mut properties = FxHashMap::default();
-        properties.insert("id".to_string(), Uuid::new_v4().to_string());
-
-        Self(properties)
-    }
-}
-
-impl fmt::Display for Properties {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let Self(map) = self;
-
-        for (key, value) in map {
-            write!(f, "{key}:: {value}")?;
+    let lines = if stop_at_content {
+        let mut lines = lines.into_iter().peekable();
+        while let Some((_, [key, value])) = lines
+            .peek()
+            .and_then(|line| PROPERTY_REGEX.captures(line).map(|caps| caps.extract()))
+        {
+            properties.insert(key.to_string(), value.to_string());
+            lines.next();
         }
+        lines.collect()
+    } else {
+        lines.retain(|line| {
+            if let Some((_, [key, value])) =
+                PROPERTY_REGEX.captures(line).map(|caps| caps.extract())
+            {
+                properties.insert(key.to_string(), value.to_string());
+                false
+            } else {
+                true
+            }
+        });
+        lines
+    };
+    *input = lines.join("\n");
+    properties
+}
 
-        Ok(())
+pub trait Properties: TryFrom<FxHashMap<String, String>> {
+    fn take_properties(input: &mut String) -> Result<Self, Self::Error>;
+    fn maybe_take_properties(input: &mut String) -> Option<Result<Self, Self::Error>>;
+}
+
+impl Properties for BlockProperties {
+    fn take_properties(input: &mut String) -> Result<Self, Self::Error> {
+        let properties = take_properties(input, false);
+        properties.try_into()
+    }
+    fn maybe_take_properties(input: &mut String) -> Option<Result<Self, Self::Error>> {
+        let properties = take_properties(input, false);
+        if properties.is_empty() {
+            None
+        } else {
+            Some(properties.try_into())
+        }
+    }
+}
+impl Properties for DocumentProperties {
+    fn take_properties(input: &mut String) -> Result<Self, Self::Error> {
+        let properties = take_properties(input, true);
+        properties.try_into()
+    }
+    fn maybe_take_properties(input: &mut String) -> Option<Result<Self, Self::Error>> {
+        let properties = take_properties(input, true);
+        if properties.is_empty() {
+            None
+        } else {
+            Some(properties.try_into())
+        }
     }
 }
