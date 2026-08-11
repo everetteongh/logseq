@@ -14,7 +14,7 @@ use walkdir::{DirEntry, WalkDir};
 /// Representation of a Logseq graph.
 pub struct Graph {
     /// Paths for the [`WalkDir`] directory crawler to exclude.
-    exclude: Vec<&'static str>,
+    exclude: Vec<String>,
     /// The graph's root.
     pub dir: PathBuf,
 }
@@ -25,7 +25,7 @@ impl Graph {
         entry
             .file_name()
             .to_str()
-            .is_some_and(|name| self.exclude.contains(&name))
+            .is_some_and(|name| self.exclude.contains(&name.to_owned()))
     }
     /// Shorthand for [`walkdir::WalkDir`] crawler access. Filtered by `Self::is_excluded` and requiring the `.md` extension.
     fn markdown_files(&self) -> impl Iterator<Item = DirEntry> {
