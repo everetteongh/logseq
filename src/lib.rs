@@ -18,10 +18,10 @@ pub mod properties;
 pub mod prelude {
     pub use crate::block::{
         Block, BlockProperties,
-        view::{Task, TaskMut, TaskPriority, TaskStatus},
+        view::{Due, DueBlock, DueBlockMut, Task, TaskMut, TaskPriority, TaskStatus},
     };
-    pub use crate::document::*;
+    pub use crate::document::{Document, DocumentProperties};
     pub use crate::error::*;
-    pub use crate::graph::*;
-    pub use crate::properties::*;
+    pub use crate::graph::{EntryKind, Graph, GraphBuilder, GraphEntry, Namespace};
+    pub use crate::properties::Properties;
 }
