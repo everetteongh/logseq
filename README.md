@@ -8,13 +8,13 @@ See [tests](./tests/).
 
 ## Logseq Support
 
-Currently, the latest version of [Logseq OG](https://github.com/Logseq/OG) (read: file-based) is supported, with some caveats:
+Currently, the latest version of [Logseq OG](https://github.com/Logseq/OG) (file-based) is supported, with some caveats:
 
 - "Timetracking" should be **disabled**
 - "Preferred workflow" should be **TODO/DOING**
-- Graph reindexing is currently TODO, so newly-created journal entry files aren't yet visible in Logseq ([tracking issue](https://codeberg.org/0xstel/logseq/issues/4))
+- Graph reindexing is currently TODO, so newly-created journal entry files aren't yet visible in Logseq ([tracking issue](https://codeberg.org/everette/logseq/issues/4))
 
-Logseq DB version support is also TODO -- see [the tracking issue](https://codeberg.org/0xstel/logseq/issues/1)
+Logseq DB version support is also TODO -- see [the tracking issue](https://codeberg.org/everette/logseq/issues/1)
 
 ## Crate Features
 
@@ -24,4 +24,4 @@ Logseq DB version support is also TODO -- see [the tracking issue](https://codeb
 
 ## Contributing
 
-Contributions -- code or issues -- are welcome! The repository on [Codeberg](https://codeberg.org/0xstel/logseq) is ideal, but contributions are also accepted on the [GitHub mirror](https://github.com/0xstel-contrib/logseq) :>
+Contributions -- code or issues -- are welcome! The repository on [Codeberg](https://codeberg.org/everette/logseq) is ideal, but contributions are also accepted on the [GitHub mirror](https://github.com/everetteongh/logseq) :>
