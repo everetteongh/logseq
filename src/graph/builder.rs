@@ -8,7 +8,7 @@ use std::path::PathBuf;
 /// A helper object for constructing a [`Graph`].
 pub struct GraphBuilder {
     /// Paths for the [`WalkDir`] directory crawler to exclude.
-    exclude: &'static [&'static str],
+    exclude: Vec<&'static str>,
     /// The root of the Logseq graph.
     dir: Option<PathBuf>,
 }
@@ -16,7 +16,7 @@ pub struct GraphBuilder {
 impl Default for GraphBuilder {
     fn default() -> Self {
         Self {
-            exclude: &EXCLUDE,
+            exclude: EXCLUDE.to_vec(),
             dir: None,
         }
     }
@@ -25,8 +25,8 @@ impl Default for GraphBuilder {
 impl GraphBuilder {
     /// Paths for the [`walkdir::WalkDir`] directory crawler to exclude.
     #[must_use]
-    pub const fn exclude(mut self, exclude: &'static [&'static str]) -> Self {
-        self.exclude = exclude;
+    pub fn exclude(mut self, exclude: &[&'static str]) -> Self {
+        self.exclude = exclude.to_vec();
         self
     }
     /// The root of the Logseq graph.

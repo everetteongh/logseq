@@ -14,7 +14,7 @@ use walkdir::{DirEntry, WalkDir};
 /// Representation of a Logseq graph.
 pub struct Graph {
     /// Paths for the [`WalkDir`] directory crawler to exclude.
-    exclude: &'static [&'static str],
+    exclude: Vec<&'static str>,
     /// The graph's root.
     pub dir: PathBuf,
 }
