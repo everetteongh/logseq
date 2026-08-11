@@ -20,9 +20,9 @@ fn main() {
     let today = graph.today().unwrap();
     
     let blocks: Vec<&Block> = today.blocks().collect();
-    let content = today.document.to_string().trim();
+    let content = today.document.to_string();
 
-    println!("The file content for today's journal entry:\n---\n{content}\n---");
+    println!("The file content for today's journal entry:\n---\n{}\n---", content.trim());
 
     if !blocks.is_empty() {
         println!("Blocks:");
