@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["block","document","error","graph","prelude","properties"]};

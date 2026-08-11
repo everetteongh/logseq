@@ -1,0 +1,2 @@
+createSrcSidebar('[["logseq",["",[["block",[["view",[["due",[],["block.rs","kind.rs","mod.rs","repeater.rs"]],["task",[],["mod.rs","priority.rs","status.rs"]]],["mod.rs"]]],["mod.rs","properties.rs"]],["document",[],["mod.rs","properties.rs"]],["graph",[["entry",[],["kind.rs","mod.rs","namespace.rs"]]],["builder.rs","mod.rs"]]],["consts.rs","error.rs","lib.rs","properties.rs"]]]]');
+//{"start":19,"fragment_lengths":[362]}

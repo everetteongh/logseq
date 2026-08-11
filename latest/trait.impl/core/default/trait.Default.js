@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["logseq",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"logseq/block/struct.Block.html\" title=\"struct logseq::block::Block\">Block</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"logseq/block/struct.BlockProperties.html\" title=\"struct logseq::block::BlockProperties\">BlockProperties</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"logseq/document/struct.Document.html\" title=\"struct logseq::document::Document\">Document</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"logseq/document/struct.DocumentProperties.html\" title=\"struct logseq::document::DocumentProperties\">DocumentProperties</a>",0],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"logseq/graph/struct.GraphBuilder.html\" title=\"struct logseq::graph::GraphBuilder\">GraphBuilder</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1458]}

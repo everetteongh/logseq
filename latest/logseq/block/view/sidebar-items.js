@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DueKind","RepeatFrom","TaskPriority","TaskStatus"],"struct":["Due","DueBlock","DueBlockMut","DueRepeater","Task","TaskMut"]};
