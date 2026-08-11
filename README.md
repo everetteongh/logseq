@@ -4,7 +4,37 @@ Simple library to read/write to Logseq note graphs in Rust, built with [comrak](
 
 ## Usage
 
-Read the [docs](https://everette.codeberg.page/logseq/latest/logseq/) online, or see the [tests](./tests/) for example code.
+First, add the crate to your `Cargo.toml`:
+
+```toml
+logseq = { git = "https://codeberg.org/everette/logseq", tag = "v0.1.2" }
+```
+
+Then, use it in your code:
+
+```rs,no_run
+use logseq::prelude::*;
+
+fn main() {
+    let graph = Graph::builder().dir("/path/to/your/graph/".into()).build().unwrap();
+    let today = graph.today().unwrap();
+    
+    let blocks: Vec<&Block> = today.blocks().collect();
+    let content = today.document.to_string().trim();
+
+    println!("The file content for today's journal entry:\n---\n{content}\n---");
+
+    if !blocks.is_empty() {
+        println!("Blocks:");
+    }
+
+    for block in blocks {
+        println!("---\n* ID: {}\n* Content (plain): {}\n---", block.properties.id, block.plain());
+    }
+}
+```
+
+See the [tests](./tests/) for more examples, or read the [docs](https://everette.codeberg.page/logseq/latest/logseq/) online.
 
 ## Crate Features
 

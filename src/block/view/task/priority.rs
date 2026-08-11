@@ -7,11 +7,11 @@ use std::{fmt, str::FromStr};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 /// Priority of a Logseq task. See [the official Logseq documentation](https://docs.logseq.com/#/page/tasks?anchor=ls-block-6a0878b3-060f-40d8-a79a-493e50b0e807)
 pub enum TaskPriority {
-    /// High priority
+    /// High priority (`[#A]`)
     A,
-    /// Moderate priority
+    /// Moderate priority (`[#B]`)
     B,
-    /// Low priority
+    /// Low priority (`[#C]`)
     C,
 }
 
