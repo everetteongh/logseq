@@ -3,3 +3,6 @@ opt-level = 3
 debug = false
 strip = true
 lto = "thin"
+
+[build]
+rustdocflags=["--default-theme=ayu"]

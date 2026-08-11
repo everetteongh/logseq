@@ -1,0 +1,13 @@
+set shell := ["sh", "-eu", "-c"]
+
+default:
+  just --list
+
+doc:
+  cargo doc --no-deps
+  git switch pages
+  git checkout master -- .gitignore
+  rm -rf latest
+  mkdir -p latest
+  cp -r target/doc/* latest/
+  rm -rf target

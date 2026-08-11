@@ -4,7 +4,7 @@ Simple library to read/write to Logseq note graphs in Rust, built with [comrak](
 
 ## Usage
 
-See [tests](./tests/).
+Read the [docs](https://everette.codeberg.page/logseq/latest/logseq/) online, or see [tests](./tests/) for example code.
 
 ## Logseq Support
 
