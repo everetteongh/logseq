@@ -5,4 +5,4 @@ strip = true
 lto = "thin"
 
 [build]
-rustdocflags=["--default-theme=ayu"]
+rustdocflags = ["--default-theme=ayu"]
