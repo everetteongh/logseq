@@ -13,9 +13,9 @@ fn main() {
     let today = graph.today().unwrap();
     
     let blocks: Vec&lt;&amp;Block&gt; = today.blocks().collect();
-    let content = today.document.to_string().trim();
+    let content = today.document.to_string();
 
-    println!(&quot;The file content for today&#39;s journal entry:\n---\n{content}\n---&quot;);
+    println!(&quot;The file content for today&#39;s journal entry:\n---\n{}\n---&quot;, content.trim());
 
     if !blocks.is_empty() {
         println!(&quot;Blocks:&quot;);
