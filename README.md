@@ -7,7 +7,7 @@ Simple library to read/write to Logseq note graphs in Rust, built with [comrak](
 First, add the crate to your `Cargo.toml`:
 
 ```toml
-logseq = { git = "https://codeberg.org/everette/logseq", tag = "v0.1.2" }
+logseq = { git = "https://codeberg.org/everette/logseq", tag = "v0.1.3" }
 ```
 
 Then, use it in your code:
@@ -18,7 +18,7 @@ use logseq::prelude::*;
 fn main() {
     let graph = Graph::builder().dir("/path/to/your/graph/".into()).build().unwrap();
     let today = graph.today().unwrap();
-    
+
     let blocks: Vec<&Block> = today.blocks().collect();
     let content = today.document.to_string();
 
