@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["block","document","error","graph","prelude","properties"]};
+window.SIDEBAR_ITEMS = {"mod":["block","consts","document","error","graph","prelude","properties"]};

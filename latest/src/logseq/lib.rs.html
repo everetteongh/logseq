@@ -6,7 +6,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#4 id=4 data-nosnippet>4</a></span><span class="doccomment">/// [Block](https://github.com/logseq/docs/blob/08f855f24d66e4509b7ea808554c13b4649e6ee1/pages/term___block.md)-level code, including views over blocks, like [`block::view::Task`] and [`block::view::DueBlock`].
 <a href=#5 id=5 data-nosnippet>5</a></span><span class="kw">pub mod </span>block;
 <a href=#6 id=6 data-nosnippet>6</a><span class="doccomment">/// Internal constants.
-<a href=#7 id=7 data-nosnippet>7</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>consts;
+<a href=#7 id=7 data-nosnippet>7</a></span><span class="kw">pub mod </span>consts;
 <a href=#8 id=8 data-nosnippet>8</a><span class="doccomment">/// Document-specific code.
 <a href=#9 id=9 data-nosnippet>9</a></span><span class="kw">pub mod </span>document;
 <a href=#10 id=10 data-nosnippet>10</a><span class="doccomment">/// Error types.
@@ -22,9 +22,10 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#20 id=20 data-nosnippet>20</a>        Block, BlockProperties,
 <a href=#21 id=21 data-nosnippet>21</a>        view::{Due, DueBlock, DueBlockMut, Task, TaskMut, TaskPriority, TaskStatus},
 <a href=#22 id=22 data-nosnippet>22</a>    };
-<a href=#23 id=23 data-nosnippet>23</a>    <span class="kw">pub use </span><span class="kw">crate</span>::document::{Document, DocumentProperties};
-<a href=#24 id=24 data-nosnippet>24</a>    <span class="kw">pub use </span><span class="kw">crate</span>::error::<span class="kw-2">*</span>;
-<a href=#25 id=25 data-nosnippet>25</a>    <span class="kw">pub use </span><span class="kw">crate</span>::graph::{EntryKind, Graph, GraphBuilder, GraphEntry, Namespace};
-<a href=#26 id=26 data-nosnippet>26</a>    <span class="kw">pub use </span><span class="kw">crate</span>::properties::Properties;
-<a href=#27 id=27 data-nosnippet>27</a>}
+<a href=#23 id=23 data-nosnippet>23</a>    <span class="kw">pub use </span><span class="kw">crate</span>::consts::LOGSEQ_EXCLUDE;
+<a href=#24 id=24 data-nosnippet>24</a>    <span class="kw">pub use </span><span class="kw">crate</span>::document::{Document, DocumentProperties};
+<a href=#25 id=25 data-nosnippet>25</a>    <span class="kw">pub use </span><span class="kw">crate</span>::error::<span class="kw-2">*</span>;
+<a href=#26 id=26 data-nosnippet>26</a>    <span class="kw">pub use </span><span class="kw">crate</span>::graph::{EntryKind, Graph, GraphBuilder, GraphEntry, Namespace};
+<a href=#27 id=27 data-nosnippet>27</a>    <span class="kw">pub use </span><span class="kw">crate</span>::properties::Properties;
+<a href=#28 id=28 data-nosnippet>28</a>}
 </code></pre></div></section></main></body></html>
