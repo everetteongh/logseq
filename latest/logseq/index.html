@@ -6,23 +6,24 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../" data-st
 <p>First, add the crate to your <code>Cargo.toml</code>:</p>
 <div class="example-wrap"><pre class="language-toml"><code>logseq = { git = &quot;https://codeberg.org/everette/logseq&quot;, tag = &quot;v0.1.2&quot; }</code></pre></div>
 <p>Then, use it in your code:</p>
-<div class="example-wrap"><pre class="language-rs"><code>use logseq::prelude::*;
 
-fn main() {
-    let graph = Graph::builder().dir(&quot;/path/to/your/graph/&quot;.into()).build().unwrap();
-    let today = graph.today().unwrap();
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>logseq::prelude::<span class="kw-2">*</span>;
+
+<span class="kw">fn </span>main() {
+    <span class="kw">let </span>graph = Graph::builder().dir(<span class="string">"/path/to/your/graph/"</span>.into()).build().unwrap();
+    <span class="kw">let </span>today = graph.today().unwrap();
     
-    let blocks: Vec&lt;&amp;Block&gt; = today.blocks().collect();
-    let content = today.document.to_string();
+    <span class="kw">let </span>blocks: Vec&lt;<span class="kw-2">&amp;</span>Block&gt; = today.blocks().collect();
+    <span class="kw">let </span>content = today.document.to_string();
 
-    println!(&quot;The file content for today&#39;s journal entry:\n---\n{}\n---&quot;, content.trim());
+    <span class="macro">println!</span>(<span class="string">"The file content for today's journal entry:\n---\n{}\n---"</span>, content.trim());
 
-    if !blocks.is_empty() {
-        println!(&quot;Blocks:&quot;);
+    <span class="kw">if </span>!blocks.is_empty() {
+        <span class="macro">println!</span>(<span class="string">"Blocks:"</span>);
     }
 
-    for block in blocks {
-        println!(&quot;---\n* ID: {}\n* Content (plain): {}\n---&quot;, block.properties.id, block.plain());
+    <span class="kw">for </span>block <span class="kw">in </span>blocks {
+        <span class="macro">println!</span>(<span class="string">"---\n* ID: {}\n* Content (plain): {}\n---"</span>, block.properties.id, block.plain());
     }
 }</code></pre></div>
 <p>See the <a href="./tests/">tests</a> for more examples, or read the <a href="https://everette.codeberg.page/logseq/latest/logseq/">docs</a> online.</p>
