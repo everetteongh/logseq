@@ -129,6 +129,7 @@ impl From<Task<'_>> for Todo {
             }
         }
 
+        to_do.status(task.status.into());
         to_do.summary(&task.label);
 
         to_do

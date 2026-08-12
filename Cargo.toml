@@ -2,7 +2,7 @@
 members = ["bindings/*"]
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 authors = ["stel <stel@national.shitposting.agency>"]
 edition = "2024"
 description = "Opinionated Logseq graph handling in Rust"
