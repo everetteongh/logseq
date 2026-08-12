@@ -12,7 +12,7 @@ logseq = { git = "https://codeberg.org/everette/logseq", tag = "v0.1.2" }
 
 Then, use it in your code:
 
-```rs,no_run
+```rust
 use logseq::prelude::*;
 
 fn main() {
