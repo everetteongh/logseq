@@ -1,3 +1,8 @@
+#[cfg(feature = "icalendar")]
+use icalendar::{Component, Event, EventLike};
+
+#[cfg(feature = "icalendar")]
+use crate::block::view::DueKind;
 use crate::{
     block::{Block, view::Due},
     error::ParseDueError,
@@ -54,5 +59,17 @@ impl<'a> TryFrom<&'a mut Block> for DueBlockMut<'a> {
             .parse()
             .map_err(|_| ParseDueError::InvalidInput)?;
         Ok(Self { block, due })
+    }
+}
+
+#[cfg(feature = "icalendar")]
+impl From<DueBlock<'_>> for Event {
+    fn from(due_block: DueBlock<'_>) -> Self {
+        let mut event = Self::with_uid(&due_block.block.properties.id.to_string());
+
+        event.starts(due_block.due.clone());
+        event.summary(&due_block.plain());
+
+        event
     }
 }

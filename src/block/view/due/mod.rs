@@ -14,6 +14,11 @@ pub use kind::*;
 pub use repeater::*;
 use std::{fmt, str::FromStr};
 use time::{Date, Time, Weekday, error::InvalidVariant};
+#[cfg(feature = "icalendar")]
+use {
+    chrono::NaiveDate,
+    icalendar::{CalendarDateTime, DatePerhapsTime},
+};
 
 /// Parser for SCHEDULED/DEADLINE. This follows standard [Org Mode format](https://orgmode.org/manual/Deadlines-and-Scheduling.html), so might be delegated to an Org dependency in the future.
 #[derive(Debug, Clone)]
@@ -121,5 +126,38 @@ fn shorten_weekday(s: &str) -> &str {
         "Saturday" => "Sat",
         "Sunday" => "Sun",
         other => other,
+    }
+}
+
+#[cfg(feature = "icalendar")]
+#[allow(clippy::fallible_impl_from)]
+impl From<Due> for DatePerhapsTime {
+    fn from(due: Due) -> Self {
+        // NOTE: We already know our date data is valid because we have a parsed object from `time`, so **this will never panic.**
+        #[allow(clippy::unwrap_used)]
+        let date_naive = NaiveDate::from_ymd_opt(
+            due.date.year(),
+            due.date.month() as u32,
+            due.date.day().into(),
+        )
+        .unwrap();
+
+        // NOTE: We already know our date data is valid because we have a parsed object from `time`, so **this will never panic.**
+        #[allow(clippy::unwrap_used)]
+        due.time.map_or_else(
+            || date_naive.into(),
+            |time| {
+                CalendarDateTime::Floating(
+                    date_naive
+                        .and_hms_opt(
+                            time.hour().into(),
+                            time.minute().into(),
+                            time.second().into(),
+                        )
+                        .unwrap(),
+                )
+                .into()
+            },
+        )
     }
 }

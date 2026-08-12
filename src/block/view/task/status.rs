@@ -1,4 +1,6 @@
 use crate::error::TaskStatusError;
+#[cfg(feature = "icalendar")]
+use icalendar::TodoStatus;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
@@ -42,6 +44,30 @@ impl fmt::Display for TaskStatus {
             Self::Done => write!(f, "DONE"),
             Self::Cancelled => write!(f, "CANCELLED"),
             Self::Waiting => write!(f, "WAITING"),
+        }
+    }
+}
+
+#[cfg(feature = "icalendar")]
+impl From<TaskStatus> for TodoStatus {
+    fn from(status: TaskStatus) -> Self {
+        match status {
+            TaskStatus::Cancelled => Self::Cancelled,
+            TaskStatus::Doing => Self::InProcess,
+            TaskStatus::Done => Self::Completed,
+            TaskStatus::ToDo | TaskStatus::Waiting => Self::NeedsAction,
+        }
+    }
+}
+
+#[cfg(feature = "icalendar")]
+impl From<TodoStatus> for TaskStatus {
+    fn from(status: TodoStatus) -> Self {
+        match status {
+            TodoStatus::Cancelled => Self::Cancelled,
+            TodoStatus::InProcess => Self::Doing,
+            TodoStatus::Completed => Self::Done,
+            TodoStatus::NeedsAction => Self::ToDo,
         }
     }
 }
