@@ -1,5 +1,5 @@
 use crate::{
-    consts::EXCLUDE,
+    consts::LOGSEQ_EXCLUDE,
     error::{GraphBuilderError, Logseq},
     graph::Graph,
 };
@@ -16,7 +16,7 @@ pub struct GraphBuilder {
 impl Default for GraphBuilder {
     fn default() -> Self {
         Self {
-            exclude: EXCLUDE.map(String::from).to_vec(),
+            exclude: LOGSEQ_EXCLUDE.map(String::from).to_vec(),
             dir: None,
         }
     }
