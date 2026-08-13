@@ -7,7 +7,7 @@ Simple library to read/write to Logseq note graphs in Rust, built with [comrak](
 First, add the crate to your `Cargo.toml`:
 
 ```toml
-logseq = { version = "0.1.5", git = "https://codeberg.org/everette/logseq", tag = "v0.1.5" }
+logseq = { version = "0.1.6", git = "https://codeberg.org/everette/logseq", tag = "v0.1.6" }
 ```
 
 Then, use it in your code:
@@ -38,8 +38,7 @@ See the [tests](./tests/) for more examples, or read the [docs](https://everette
 
 ## Crate Features
 
-- `regex-lite`: use the [regex-lite](https://lib.rs/crates/regex-lite) crate as the regular expression backend (**enabled by default**)
-- `regex`: use the [regex](https://lib.rs/crates/regex) crate as the regular expression backend
+- `regex-lite`: use the [regex-lite](https://lib.rs/crates/regex-lite) crate as the regular expression backend; otherwise, use [regex](https://lib.rs/crates/regex) (**enabled by default**)
 - `serde`: enable support for [serde](https://serde.rs) serialization & deserialization of certain types
 - `icalendar`: provides [icalendar](https://lib.rs/crates/icalendar) type conversion for block views
 

@@ -12,6 +12,8 @@ use crate::{
 pub use block::*;
 pub use kind::*;
 pub use repeater::*;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 use time::{Date, Time, Weekday, error::InvalidVariant};
 #[cfg(feature = "icalendar")]

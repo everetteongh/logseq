@@ -48,7 +48,7 @@ pub enum Logseq {
 
 #[cfg(feature = "python")]
 impl From<Logseq> for PyErr {
-    fn from(error: Alleged) -> Self {
+    fn from(error: Logseq) -> Self {
         let error_str = format!("{error:?}");
         PyValueError::new_err(error_str)
     }

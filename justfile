@@ -4,7 +4,7 @@ default:
   just --list
 
 doc:
-  cargo doc --no-deps
+  cargo doc --all-features --no-deps
   git switch pages
   git checkout master -- .gitignore
   rm -rf latest

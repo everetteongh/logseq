@@ -1,5 +1,5 @@
 use comrak::options::{Extension, Options, Render};
-#[cfg(feature = "regex")]
+#[cfg(not(feature = "regex-lite"))]
 use regex::Regex;
 #[cfg(feature = "regex-lite")]
 use regex_lite::Regex;

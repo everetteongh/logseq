@@ -2,7 +2,7 @@
 members = ["bindings/*"]
 
 [workspace.package]
-version = "0.1.5"
+version = "0.1.6"
 authors = ["stel <stel@national.shitposting.agency>"]
 edition = "2024"
 description = "Opinionated Logseq graph handling in Rust"
@@ -49,9 +49,7 @@ workspace = true
 
 [features]
 default = ["regex-lite"]
-# use the [regex](https://lib.rs/crates/regex) crate as the regular expression backend
-regex = ["dep:regex"]
-# use the [regex-lite](https://lib.rs/crates/regex-lite) crate as the regular expression backend (**enabled by default**)
+# use the [regex-lite](https://lib.rs/crates/regex-lite) crate as the regular expression backend; otherwise, use [regex](https://lib.rs/crates/regex) (**enabled by default**)
 regex-lite = ["dep:regex-lite"]
 # enable support for [serde](https://serde.rs) serialization & deserialization of certain types
 serde = ["dep:serde", "time/serde"]
