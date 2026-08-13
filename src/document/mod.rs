@@ -39,8 +39,8 @@ fn determine_depth(mut node: &AstNode) -> usize {
 pub struct Document {
     /// The document's [`DocumentProperties`].
     pub properties: Option<DocumentProperties>,
-    /// The document's blocks.
-    blocks: IndexMap<Uuid, Block>,
+    /// The document's blocks. You should usually avoid accessing directly if [`Document`]'s methods are sufficient, but direct access is useful to e.g. delete all blocks or prefill a document with blocks.
+    pub blocks_map: IndexMap<Uuid, Block>,
 }
 
 impl Document {
@@ -52,30 +52,30 @@ impl Document {
     /// Return an immutable iterator over the document's blocks. Ordered.
     #[must_use]
     pub fn blocks(&self) -> Values<'_, Uuid, Block> {
-        self.blocks.values()
+        self.blocks_map.values()
     }
     /// Return a mutable iterator over the document's blocks. Ordered.
     #[must_use]
     pub fn blocks_mut(&mut self) -> ValuesMut<'_, Uuid, Block> {
-        self.blocks.values_mut()
+        self.blocks_map.values_mut()
     }
     /// Immutable reference to a block by ID.
     #[must_use]
     pub fn get(&self, id: Uuid) -> Option<&Block> {
-        self.blocks.get(&id)
+        self.blocks_map.get(&id)
     }
     /// Mutable reference to a block by ID.
     #[must_use]
     pub fn get_mut(&mut self, id: Uuid) -> Option<&mut Block> {
-        self.blocks.get_mut(&id)
+        self.blocks_map.get_mut(&id)
     }
     /// Prepend a block to the document.
     pub fn prepend(&mut self, block: Block) -> Option<Block> {
-        self.blocks.shift_insert(0, block.properties.id, block)
+        self.blocks_map.shift_insert(0, block.properties.id, block)
     }
     /// Append a block to the document.
     pub fn append(&mut self, block: Block) -> Option<Block> {
-        self.blocks.insert(block.properties.id, block)
+        self.blocks_map.insert(block.properties.id, block)
     }
 }
 
@@ -100,7 +100,7 @@ impl FromStr for Document {
         let mut markdown = input.to_string();
         let mut depth_stack: Vec<(Uuid, usize)> = Vec::new();
 
-        let mut blocks = IndexMap::new();
+        let mut blocks_map = IndexMap::new();
         let properties = DocumentProperties::maybe_take_properties(&mut markdown)
             .transpose()
             .unwrap();
@@ -133,7 +133,7 @@ impl FromStr for Document {
 
                 let parent_id = depth_stack.last().map(|(id, _)| *id);
 
-                blocks.insert(
+                blocks_map.insert(
                     block_id,
                     Block {
                         markdown: block_markdown,
@@ -146,12 +146,15 @@ impl FromStr for Document {
 
                 depth_stack.push((block_id, depth));
 
-                if let Some(parent_block) = parent_id.and_then(|id| blocks.get_mut(&id)) {
+                if let Some(parent_block) = parent_id.and_then(|id| blocks_map.get_mut(&id)) {
                     parent_block.children.push(block_id);
                 }
             }
         }
 
-        Ok(Self { properties, blocks })
+        Ok(Self {
+            properties,
+            blocks_map,
+        })
     }
 }
