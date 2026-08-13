@@ -10,4 +10,3 @@ doc:
   rm -rf latest
   mkdir -p latest
   cp -r target/doc/* latest/
-  rm -rf target

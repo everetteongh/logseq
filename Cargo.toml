@@ -2,7 +2,7 @@
 members = ["bindings/*"]
 
 [workspace.package]
-version = "0.1.6"
+version = "0.1.7"
 authors = ["stel <stel@national.shitposting.agency>"]
 edition = "2024"
 description = "Opinionated Logseq graph handling in Rust"
@@ -65,7 +65,7 @@ humantime = "2.4.0"
 icalendar = { version = "0.17.0", optional = true }
 indexmap = "2.14.0"
 pyo3 = { workspace = true, optional = true }
-regex = { version = "1.13.0", optional = true }
+regex = "1.13.0"
 regex-lite = { version = "0.1.0", optional = true }
 rustc-hash = "2.1.0"
 serde = { version = "1.0.0", features = ["derive"], optional = true }
